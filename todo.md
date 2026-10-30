@@ -4,3 +4,4 @@
 * mattpocock adaptieren, insb.  https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md
 * serverops skill: kümmert sich um deployment. insb schaut es sich merge-notes an und startet server neu mit neuen features. und schaut ins log nach fehlern/bugs, und schaut nach einem merge, ob das log die erwarteten neuen zeilen hat. Idee ist, dass der server local oder per ssh erreichbar ist, und dass die session/der agent messages von anderen session/agenten/oder direkt vom user bekommt, die dann deployment anfragen. 
 * alle meine projekte durchsuchen und skills hier consolidieren
+* git skill/agent: read-only git access (e.g. diff of changes). Use it in the implement skill so the reviewer sees the actual diff instead of relying on the implementer's list of changed files.

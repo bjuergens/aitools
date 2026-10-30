@@ -1,26 +1,28 @@
 ---
 name: implement
-description: Hand an implementation task to a subagent. Refines the goal and decisions from the session, explores the affected code, builds a handover (goal, plan/architecture notes, important files, tests to run), launches a subagent to implement it, has the result reviewed and sends the findings back to the implementer, and relays the reports.
+description: Use when invoked directly, or for any non-trivial code change. Refines requirements, explores the code, then runs an implement → review loop with subagents via a handover folder.
 argument-hint: <what to implement, optional if clear from context>
 ---
 
 # implement
 
-Create a handover folder with `mktemp -d -t aitools.implement.XXXXXX` and note the folderpath. 
+Create a handover folder with `mktemp -d -t aitools.implement.XXXXXX` and note the folder path.
+
+All subagents see nothing but the handover folder and the workdir, so every handover must be self-contained.
 
 ## 1. Refine the requirements
 
-- From this session collect: 
+- From this session collect:
   - the **goal**: what the user wants in the end
   - the **decisions** made along the way: chosen approaches, rejected alternatives, constraints, non-goals
-- Then look for gaps: 
-  - acceptance criteria, 
-  - scope,
+- Then look for gaps:
+  - acceptance criteria
+  - scope
   - choices
   - contradictions
-- Summarize your findings
-- Ask the user about unclear points
-- store the summary of the requirements to requirement.md in handover folder and link that file to the user
+- Summarize your findings.
+- Ask the user about unclear points and wait for the answers before continuing.
+- Store the summary of the requirements as `requirement.md` in the handover folder and link that file to the user.
 
 ## 2. Explore subagents
 
@@ -34,10 +36,9 @@ Then, with `explore.dataflow.md` as additional input:
 
 - **modules** → `explore.modules.md`: find the modules, classes, dependencies and class hierarchies that the requirements affect, and how they depend on each other.
 
-
 ## 3. Build the handover
 
-Write `implement.md` into handover folder, based on `requirement.md` and the explore results: 
+Write `implement.md` into the handover folder, based on `requirement.md` and the explore results:
 
 - **Goal**: what must be true when done
 - **Plan / architecture notes**: approach, decisions already made, constraints, non-goals
@@ -47,41 +48,45 @@ Write `implement.md` into handover folder, based on `requirement.md` and the exp
 
 Reference `requirement.md`, `explore.dataflow.md` and `explore.modules.md` from `implement.md`. Put other long material in extra files in the same folder and reference it too.
 
-The subagent sees nothing but the handover folder with implement.md and the workdir. 
+## 4. Implement / review loop
 
-## 4. implemtation subagent
+Rounds are numbered `<n>` = 0, 1, 2, … Each round's subagents get the paths of all files in the handover folder. Only their main file is must-read; the others are for reference as needed.
 
-Give it the instructions below, with `<implement>` set to the path of `implement.md`:
+### 4a. Implement
 
-> 1. **Read the handover.** Read `<implement>` and every file it references, transitively.
+Round 0: launch an implementation subagent. Its main file is `implement.md`.
+
+> 1. **Read the handover.** Read `implement.md` and every file it references, transitively.
 > 2. **Implement.** Read the important files first. Follow the plan, but deviate if it's wrong or a better way shows up. Note each deviation and why. Also note any pitfalls, bugs or constraints you run into.
 > 3. **Verify.** Run the tests from the handover and fix the failures your change caused.
-> 4. **Report.** End with a final message (also written to `implement-result.md` in the handover folder):
+> 4. **Report.** End with a final message (also written to `implement.0.result.md` in the handover folder):
 >    - **Status**: done / partial / blocked
 >    - **Result**: what changed and which files
 >    - **Verification**: each test: passed / failed / not run, and why
 >    - **Deviations**: plan → what was done → why
 >    - **Pitfalls, bugs, constraints, additional notes**
 
-## 5. Review subagent
+Later rounds: continue the session of the round-0 implementation subagent (don't start a new one). Its main file is `implement.<n-1>.review.md`.
 
-Launch a read-only review subagent (it must not modify any files). Give it the instructions below, and save its final message as `review.<n>.md` in the handover folder (`<n>` = review round, starting at 1):
-
-> 1. **Read** `<implement>`, every file it references, `implement-result.md` and any earlier `review.*.md` / `fix-result.*.md`. Then read the changed files.
-> 2. **Review** the changes against the requirements: correctness, missed requirements, edge cases, unjustified deviations, consistency with the surrounding code, missing tests.
-> 3. **Report** a list of findings, most severe first. Each one has: severity (blocker / major / minor), file:line, the problem, and a suggested fix. If there are no findings, say so.
-
-## 6. Fix findings
-
-If `review.<n>.md` has findings, send them back to the implementation subagent from step 4 (continue its session, don't start a new one) with these instructions:
-
-> 1. **Read** `review.<n>.md`.
+> 1. **Read** `implement.<n-1>.review.md`.
 > 2. **Fix** each finding. If you think a finding is wrong or not worth fixing, skip it and say why.
 > 3. **Verify.** Run the tests from the handover again.
-> 4. **Report.** End with a final message (also written to `result.<n>.result.md` in the handover folder): for each finding, fixed / skipped and why, plus files changed, test results, and new pitfalls or notes.
+> 4. **Report.** End with a final message (also written to `implement.<n>.result.md` in the handover folder): for each finding, fixed / skipped and why, plus files changed, test results, and new pitfalls or notes.
 
-Then go back to step 5 for the next review round. Repeat until a review has no findings. Before the 3rd fix round, stop and ask the user for guidance: show the open findings and what was tried so far.
+### 4b. Review
 
-## 7. Relay the result
+Launch a review subagent of the explore type: read-only, file read/search tools only. Save its final message as `implement.<n>.review.md`. Its main file is `implement.<n>.result.md`.
 
-Pass on to the user the implementation report, the review findings and fix reports of each round, and any open findings, along with the handover folder path.
+> 1. **Read** the main file, then the changed files it lists. Consult the other handover files as needed (requirements, plan, earlier reviews and results).
+> 2. **Review** the changes against the requirements: correctness, missed requirements, edge cases, unjustified deviations, consistency with the surrounding code, missing tests. For findings skipped earlier: if the reason is obvious, accept it and don't raise them again; if you disagree, raise them again with severity increased by one level (minor → major → blocker).
+> 3. **Report** a list of findings, most severe first. Each one has: severity (blocker / major / minor), file:line, the problem, and a suggested fix. If there are no findings, say so.
+
+### 4c. Decide
+
+- **Done** if the review has no findings at all, or if this review and the previous one both have no blocker/major findings.
+- **Ask the user** for guidance every 3 rounds (before starting round 3, 6, …): show the open findings and what was tried so far.
+- Otherwise start the next round at 4a.
+
+## 5. Relay the result
+
+Give the user a short summary: status, what changed, deviations, test results, number of rounds, open findings, and notable pitfalls. Link the handover folder for the full reports.
