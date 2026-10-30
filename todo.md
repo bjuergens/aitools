@@ -4,6 +4,10 @@
 * mattpocock adaptieren, insb.  https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md
 * serverops skill: kümmert sich um deployment. insb schaut es sich merge-notes an und startet server neu mit neuen features. und schaut ins log nach fehlern/bugs, und schaut nach einem merge, ob das log die erwarteten neuen zeilen hat. Idee ist, dass der server local oder per ssh erreichbar ist, und dass die session/der agent messages von anderen session/agenten/oder direkt vom user bekommt, die dann deployment anfragen. 
 * alle meine projekte durchsuchen und skills hier consolidieren
+* multi-agent review skill hier herkopieren
+ * extra agent: tension between claude.md und implementierung hier oder requirements.
+ * falls reviewmd vorhanden: extra agent dafür.
+ * extra agent: was sind tangierende architektur entscheidungen? --> recherche, wie andere projekte ähnliche probleme lösen.
 * git skill/agent: read-only git access (e.g. diff of changes). Use it in the implement skill so the reviewer sees the actual diff instead of relying on the implementer's list of changed files.
 * skill, der agentsmd/claudemd reviewt. anschauen wie eine gute agentsmd aussieht, z.b. https://github.com/bjuergens/comibull/blob/main/CLAUDE.md und dann prinzipien in den skill festhalten.
   * lean
