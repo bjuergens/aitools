@@ -1,0 +1,61 @@
+
+*Claude worked himself into a corner — What now?*
+
+**Symptom:** He adds layers of onion code and workarounds.
+
+**Problem:** The system prompt tells him to be conservative and only change small things at a time. It's hard to compel him to do a fresh architecture that breaks old assumptions and requirements.
+
+**Solution:**
+
+- Tell him to remove the problematic architecture entirely on a new branch.
+    - Planning mode works well here, because you can review where he'll make the cut, and tell him where to add stubs.
+    - Tell him to leave grepable marker-comments at the cutting-boundary.
+- Implement from scratch in a new session.
+    - Tell him to research explicitly. 
+    - Tell him to ignore git history. In fact: he may not touch git at all during this stage.
+    - Relax some constraints. The less he has to worry about, the better he can focus on the task at hand.
+    - Add the constraints back in once he has a working first draft.
+
+## Example
+
+First, create a clean slate:
+
+```
+We want to create a clean slate for a redesign of the worker
+code, page processing, and pricing.
+
+Delete tasks table and related code. Delete tasks API and
+related code. Delete pricing and task costs and related code.
+
+We expect some tests to fail after achieving clean slate.
+This is fine.
+```
+
+Then re-implement the feature from scratch in a new session:
+
+```
+Implement worker with SAQ (saq[postgres]).
+
+- Two task types: DETECT_PAGE (CPU/OpenCV) and
+  ANALYZE_REGIONS (I/O/Anthropic API)
+- See ai.py for the actual code that the worker will run
+- Task triggered via relevant buttons in UI
+- WebSocket push on task completion
+- Fail fast and loud — we'll handle stability later
+- Stay with official guidelines
+
+Current situation: we removed all the old stuff so we can
+do a complete redesign. Ignore the old implementation
+completely. Starting from scratch.
+
+Todo:
+1. Research SAQ's Postgres backend
+2. Research SAQ guides
+3. Plan and implement the migration — you are free to
+   restructure the DB model, schema, and constraints
+
+No constraints: you may ignore CLAUDE.md constraints.
+Change the DB schema, status lifecycle, whatever makes the
+SAQ integration clean. Just flag what changed at the end.
+```
+
