@@ -7,7 +7,7 @@
 * git skill/agent: read-only git access (e.g. diff of changes). Use it in the implement skill so the reviewer sees the actual diff instead of relying on the implementer's list of changed files.
 * skill, der agentsmd/claudemd reviewt. anschauen wie eine gute agentsmd aussieht, z.b. https://github.com/bjuergens/comibull/blob/main/CLAUDE.md und dann prinzipien in den skill festhalten.
   * lean
-  * tension zu review? code? anderen documenten?
+  * tension zu review? code? anderen documenten? systemprompt/harness?
   * Zu detailliert?
   * 
   * inhalt
