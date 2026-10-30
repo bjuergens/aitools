@@ -7,7 +7,7 @@ This repository is collection of my AI Tools/Guides/Skills/etc. We use it distri
 
 ## handover between agents/skills
 
-create tempfolder with `mktemp -d -t aitools.<descr>.XXXXXX`, where <descr> is like "review"
+create tempfolder with `mktemp -d -t aitools.<descr>.XXXXXX`, where <descr> is like "review". 
 
 
 # Do and Dont

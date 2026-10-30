@@ -1,2 +1,6 @@
 
-look add claude code Skill injection and opencode commands. especially for handover between skills/agents
+* look add claude code Skill injection and opencode commands. especially for handover between skills/agents
+* orchestrator session: nimmt anweisung von user entgegeben und spawn subagent für quellcode exploration, recherche, architectur, imeplementierung, review, etc. Idee ist, dass der orchestrater selbst nicht mit dem projekt interagiert, aber dafür ein teures llm ist. insb. soll es dann auch feedback cycles geben. z.B. wenn implementierung merkt, dass die architektur nicht funktioniert, dann soll eine neue recherche gestartet werden, und dann ggf. eine architectur überlegt werden. 
+* mattpocock adaptieren, insb.  https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md
+* serverops skill: kümmert sich um deployment. insb schaut es sich merge-notes an und startet server neu mit neuen features. und schaut ins log nach fehlern/bugs, und schaut nach einem merge, ob das log die erwarteten neuen zeilen hat. Idee ist, dass der server local oder per ssh erreichbar ist, und dass die session/der agent messages von anderen session/agenten/oder direkt vom user bekommt, die dann deployment anfragen. 
+* alle meine projekte durchsuchen und skills hier consolidieren
